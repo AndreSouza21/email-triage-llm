@@ -1,0 +1,44 @@
+# --- Secrets and credentials (NEVER commit these) ---
+.env
+.env.*
+!.env.example
+credentials.json
+token.json
+client_secret*.json
+*.pem
+*.key
+
+# --- Personal data ---
+data/real/
+data/private/
+*.mbox
+*.eml
+
+# --- Local state and logs ---
+state.json
+*.log
+logs/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# --- Arquivos para agentes de IA ---
+AGENTS.md
+.skills/
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

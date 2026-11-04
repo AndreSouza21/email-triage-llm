@@ -71,10 +71,12 @@ docs/          guia de configuração, prints
 
 ## Onde roda
 
-- **Agora:** localmente, na minha máquina.
-- **Planejado:** execução agendada no GitHub Actions (grátis em repositório
-  público; execuções agendadas são "melhor esforço" e têm intervalo mínimo de
-  uns 5 minutos).
+- Desenvolvimento: localmente, na minha máquina.
+- Uso real: execução agendada no GitHub Actions (grátis em repositório
+  público), para ficar sempre rodando sem depender do meu PC. É o último
+  passo do MVP. Execuções agendadas são "melhor esforço" (intervalo mínimo
+  de uns 5 minutos e possível pausa após ~60 dias sem atividade no repo),
+  o que é aceitável aqui.
 
 ## Privacidade
 
