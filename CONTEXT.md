@@ -113,7 +113,7 @@ docs/           guia de configuração, prints
 - [x] Repositório criado
 - [x] .gitignore, README e CONTEXT commitados
 - [x] AGENTS.md e .skills criados (só locais, ignorados pelo git)
-- [ ] Ambiente Python
+- [x] Ambiente Python
 - [ ] Acesso à Gmail API (conta pessoal)
 - [ ] Bot do Telegram
 - [ ] Regras
