@@ -29,11 +29,15 @@ Faça commits pequenos, um escopo por commit.
 
 ## Branches
 
-Por enquanto, por ser a base do projeto, o trabalho vai direto na `main`.
-Conforme o código crescer, a ideia é usar branches por escopo (uma por
-funcionalidade ou correção) em vez de trabalhar tudo na `main`, com nomes
-descritivos como `leitura-gmail` ou `notificacao-telegram`. Esta seção será
-ampliada quando esse fluxo começar.
+A base do projeto (docs, esqueleto, ambiente) foi feita direto na `main`.
+A partir do acesso ao Gmail, o trabalho passa a ser feito em **uma branch por
+escopo** (uma por funcionalidade ou correção), com nomes descritivos como
+`leitura-gmail` ou `notificacao-telegram`. A branch sai da `main` atualizada,
+recebe commits pequenos daquele escopo e volta para a `main` quando o escopo
+fica pronto.
+
+- A primeira branch desse fluxo é `leitura-gmail` (acesso à Gmail API).
+- O push e a volta para a `main` ficam com o André (ver `AGENTS.md`).
 
 ## Nomes e código
 
