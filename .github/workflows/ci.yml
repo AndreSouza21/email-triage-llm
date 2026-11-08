@@ -1,0 +1,33 @@
+# CI de testes/lint: roda a cada push e PR, dando o selo verde/vermelho.
+# Hoje checa sintaxe e estilo (ruff). O pytest entra aqui quando houver
+# testes (junto da branch de regras).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checagem:
+    runs-on: ubuntu-latest
+    steps:
+      # Baixa o codigo do repositorio para a maquina do CI.
+      - uses: actions/checkout@v4
+
+      # Instala o Python (3.10, a versao minima que o projeto declara).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # Instala so o linter. As libs do projeto nao sao necessarias para
+      # checar sintaxe e estilo; entram quando houver pytest.
+      - name: Instalar o ruff
+        run: pip install ruff
+
+      # Compila todos os .py: falha se houver erro de sintaxe.
+      - name: Checar sintaxe
+        run: python -m compileall src
+
+      # Linter: aponta erros e problemas de estilo no codigo.
+      - name: Rodar o ruff
+        run: ruff check src
