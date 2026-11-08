@@ -51,7 +51,12 @@ um token de bot do Telegram e uma chave de API do provedor de LLM.
 git clone https://github.com/AndreSouza21/email-triage-llm
 cd email-triage-llm
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# Ative o ambiente conforme o seu terminal:
+source .venv/bin/activate        # Linux / macOS
+source .venv/Scripts/activate    # Windows (Git Bash)
+.venv\Scripts\Activate.ps1       # Windows (PowerShell)
+
 pip install -r requirements.txt
 cp .env.example .env             # depois preencha suas chaves
 python -m src.main
