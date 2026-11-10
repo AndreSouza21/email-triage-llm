@@ -70,3 +70,91 @@ def test_campos_ausentes_viram_string_vazia():
     assert resultado["remetente"] == "Fulano <fulano@exemplo.com>"
     assert resultado["assunto"] == ""
     assert resultado["trecho"] == ""
+
+
+def test_extrai_corpo_de_email_multipart():
+    # E-mail ficticio multipart: o corpo nao esta em payload.body.data, e sim
+    # dentro de payload.parts (uma parte text/plain e uma text/html).
+    mensagem = {
+        "payload": {
+            "headers": [
+                {"name": "From", "value": "Loja <promo@exemplo.com>"},
+                {"name": "Subject", "value": "Promocao da semana"},
+            ],
+            "body": {"data": ""},  # vazio: o corpo real esta nas parts
+            "parts": [
+                {
+                    "mimeType": "text/plain",
+                    "body": {"data": _codificar_corpo("Descontos de ate 50%.")},
+                },
+                {
+                    "mimeType": "text/html",
+                    "body": {"data": _codificar_corpo("<b>Descontos</b>")},
+                },
+            ],
+        }
+    }
+
+    resultado = extrair_email(mensagem)
+
+    assert resultado["remetente"] == "Loja <promo@exemplo.com>"
+    assert resultado["assunto"] == "Promocao da semana"
+    # Pega o texto puro (text/plain), nao o HTML.
+    assert resultado["trecho"] == "Descontos de ate 50%."
+
+
+def test_extrai_texto_de_email_so_html():
+    # E-mail ficticio que so tem text/html, sem text/plain. O trecho deve vir
+    # como texto limpo, sem tags e sem o conteudo do <style>.
+    html = (
+        "<html><head><style>.x{color:red}</style></head>"
+        "<body><p>Ola, tudo bem?</p><p>Confira a novidade.</p></body></html>"
+    )
+    mensagem = {
+        "payload": {
+            "headers": [
+                {"name": "From", "value": "Loja <promo@exemplo.com>"},
+                {"name": "Subject", "value": "Novidades"},
+            ],
+            "body": {"data": ""},
+            "parts": [
+                {
+                    "mimeType": "text/html",
+                    "body": {"data": _codificar_corpo(html)},
+                },
+            ],
+        }
+    }
+
+    resultado = extrair_email(mensagem)
+
+    assert resultado["assunto"] == "Novidades"
+    # Sem tags, sem o CSS do <style>; so o texto visivel.
+    assert "<" not in resultado["trecho"]
+    assert ".x{color:red}" not in resultado["trecho"]
+    assert "Ola, tudo bem?" in resultado["trecho"]
+    assert "Confira a novidade." in resultado["trecho"]
+
+
+def test_trecho_remove_urls_longas():
+    # Corpo ficticio com texto util e uma URL longa de rastreamento (entre < >,
+    # como o Gmail escreve no text/plain). A URL deve sair; o texto fica.
+    url = "https://c.gle/" + "A" * 300
+    corpo = f"Confira os termos atualizados. <{url}> Ate breve."
+    mensagem = {
+        "payload": {
+            "headers": [
+                {"name": "From", "value": "Google <noreply@exemplo.com>"},
+                {"name": "Subject", "value": "Termos"},
+            ],
+            "body": {"data": _codificar_corpo(corpo)},
+        }
+    }
+
+    resultado = extrair_email(mensagem)
+
+    # A URL (e o "c.gle") sumiu; o texto util ficou.
+    assert "http" not in resultado["trecho"]
+    assert "c.gle" not in resultado["trecho"]
+    assert "Confira os termos atualizados." in resultado["trecho"]
+    assert "Ate breve." in resultado["trecho"]
