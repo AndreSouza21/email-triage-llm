@@ -10,6 +10,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+from src.leitura import extrair_email
+
 # Escopo do OAuth: o quanto de acesso pedimos ao Google.
 # "gmail.modify" permite ler e-mails e mexer em rotulos. E o menor escopo que
 # cobre ler + rotular (somente leitura nao rotula). A trava de "nunca apagar"
@@ -64,11 +66,53 @@ def obter_servico():
     return build("gmail", "v1", credentials=credenciais)
 
 
+def buscar_emails(servico, maximo=5):
+    """Busca os e-mails nao lidos e devolve a lista ja extraida.
+
+    Usa messages.list para pegar os IDs e messages.get para baixar cada
+    e-mail inteiro; passa cada um pelo extrair_email. Devolve uma lista de
+    dicts {"remetente", "assunto", "trecho"}, do mais recente para o mais
+    antigo. So le: nao marca nem mexe em rotulo.
+    """
+    # 1. Lista os IDs dos nao lidos. "q" e a mesma busca da caixa do Gmail.
+    #    maxResults limita quantos IDs voltam (5, para desenvolvimento).
+    resposta = (
+        servico.users()
+        .messages()
+        .list(userId="me", q="is:unread", maxResults=maximo)
+        .execute()
+    )
+
+    # Se nao houver nenhum nao lido, "messages" nem vem na resposta.
+    ids = resposta.get("messages", [])
+
+    # 2. Para cada ID, baixa o e-mail inteiro e extrai os tres campos.
+    emails = []
+    for item in ids:
+        bruto = (
+            servico.users()
+            .messages()
+            .get(userId="me", id=item["id"], format="full")
+            .execute()
+        )
+        emails.append(extrair_email(bruto))
+
+    return emails
+
+
 def principal():
-    """Prova que a autenticacao funciona: imprime o e-mail da conta conectada."""
+    """Prova a conexao e lista os e-mails nao lidos (so remetente e assunto)."""
     servico = obter_servico()
     perfil = servico.users().getProfile(userId="me").execute()
     print("Conectado ao Gmail como:", perfil["emailAddress"])
+
+    emails = buscar_emails(servico)
+    print(f"\n{len(emails)} e-mail(s) nao lido(s):\n")
+    for email in emails:
+        # So remetente e assunto no terminal; o trecho pode ter dado pessoal.
+        print("De:     ", email["remetente"])
+        print("Assunto:", email["assunto"])
+        print("-" * 40)
 
 
 if __name__ == "__main__":

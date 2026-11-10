@@ -150,6 +150,13 @@ Candidatas para depois:
 - `glossario`: manter um `GLOSSARIO.md` se o vocabulário crescer.
 - Skill de avaliação, quando existir o conjunto de teste.
 
+## Pendencias tecnicas
+
+- `src/gmail_client.py` precisa passar pelo `ruff format` (o `ruff check`
+  ja passa; so a formatacao difere). Fazer num commit `style:` separado,
+  para nao misturar formatacao de codigo antigo com mudanca de
+  funcionalidade. O CI roda so `ruff check`, entao isso nao quebra o CI.
+
 ## Como colaborar
 
 - Um passo pequeno por vez, explicando o porquê.

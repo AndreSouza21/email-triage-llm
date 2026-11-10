@@ -4,3 +4,5 @@ google-auth-oauthlib
 
 python-dotenv
 
+# Extrai texto de e-mails que so vem em HTML (sem parte text/plain).
+beautifulsoup4==4.15.0
