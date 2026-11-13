@@ -61,10 +61,10 @@ contas.
 | Primeira conta | Gmail pessoal | A conta da faculdade pode estar bloqueada pelo administrador |
 | Onde roda | Local só para desenvolvimento; uso real no GitHub Actions (agendado, sempre rodando) | Preciso que notifique sem o meu PC ligado |
 
-Provedor e modelo de LLM: Google Gemini, modelo `gemini-2.5-flash-lite`
+Provedor e modelo de LLM: Google Gemini, modelo `gemini-3.5-flash-lite`
 (free tier). Escolhido pela folga do limite diário gratuito; classificar
 e-mail não exige o modelo mais forte. Se a acurácia decepcionar na avaliação,
-trocar para `gemini-2.5-flash`.
+trocar para `gemini-3.5-flash`.
 
 ## Categorias
 
@@ -127,7 +127,7 @@ docs/           guia de configuração, prints
 - [x] Ambiente Python
 - [x] Acesso à Gmail API (conta pessoal)
 - [ ] Bot do Telegram
-- [ ] Classificador com LLM
+- [x] Classificador com LLM
 - [ ] Rotulagem no Gmail
 - [ ] Notificação no Telegram para e-mails importantes
 - [ ] Conjunto de teste rotulado e avaliação

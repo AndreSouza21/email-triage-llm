@@ -6,3 +6,7 @@ python-dotenv
 
 # Extrai texto de e-mails que so vem em HTML (sem parte text/plain).
 beautifulsoup4==4.15.0
+
+# SDK oficial do Google para chamar o Gemini (classificador).
+# 2.33.0 e a ultima versao que roda em Python 3.10 (a 2.34+ exige 3.11).
+google-genai==2.33.0
