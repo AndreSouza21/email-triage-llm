@@ -8,4 +8,5 @@ python-dotenv
 beautifulsoup4==4.15.0
 
 # SDK oficial do Google para chamar o Gemini (classificador).
-google-genai==3.3.0
+# 2.33.0 e a ultima versao que roda em Python 3.10 (a 2.34+ exige 3.11).
+google-genai==2.33.0
