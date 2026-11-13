@@ -25,7 +25,7 @@ Também precisa demonstrar uma aplicação com LLM com acurácia medida.
 
 ### MVP (dentro do escopo)
 1. Ler e-mails novos do Gmail (polling, uma conta pessoal primeiro).
-2. Classificar com regras primeiro e LLM para o restante.
+2. Classificar com LLM.
 3. Aplicar um rótulo do Gmail por categoria.
 4. Enviar mensagem no Telegram quando o e-mail for importante.
 5. Avaliar com um conjunto de teste rotulado à mão e publicar a acurácia.
@@ -55,22 +55,33 @@ contas.
 | Acesso aos e-mails | Gmail API (OAuth) | Oficial e confiável |
 | Detectar e-mail novo | Polling a cada poucos minutos | Bem mais simples que push |
 | Notificação | Bot do Telegram | Grátis, simples, chega no celular |
-| Classificação | Regras primeiro, depois LLM | Mais barato e rápido nos casos óbvios |
-| Saída do LLM | JSON: categoria, prioridade, motivo | Fácil de validar |
+| Classificação | Só LLM (regras descartadas) | O julgamento depende do conteúdo; regra cega erra (ex.: estágio que parece propaganda) |
+| Saída do LLM | JSON: `categoria`, `prioridade` (alta/media/baixa), `motivo` (frase curta) | Fácil de validar |
 | Segurança | Só adicionar rótulos, nunca apagar | Um erro de classificação não pode perder e-mail |
 | Primeira conta | Gmail pessoal | A conta da faculdade pode estar bloqueada pelo administrador |
 | Onde roda | Local só para desenvolvimento; uso real no GitHub Actions (agendado, sempre rodando) | Preciso que notifique sem o meu PC ligado |
 
-Provedor e modelo de LLM: A DEFINIR.
+Provedor e modelo de LLM: Google Gemini, modelo `gemini-2.5-flash-lite`
+(free tier). Escolhido pela folga do limite diário gratuito; classificar
+e-mail não exige o modelo mais forte. Se a acurácia decepcionar na avaliação,
+trocar para `gemini-2.5-flash`.
 
 ## Categorias
 
 `importante`, `classroom`, `aviso_faculdade`, `propaganda`, `pessoal`
 
 ### O que conta como "importante"
-A DEFINIR. Candidatos: mensagens de professores, prazos, mudança de prova ou
-de horário, alertas de banco e segurança, oportunidades de estágio e vaga,
-pessoas específicas.
+É importante o e-mail que você precisa ver hoje porque tem ação ou prazo
+seu atrelado, ou é de segurança/dinheiro. Em concreto:
+
+- prazo, entrega ou mudança de data/horário/prova da faculdade;
+- mensagem direta de professor ou de uma pessoa específica;
+- oportunidade de estágio ou vaga (mesmo que pareça propaganda);
+- alerta de banco, segurança ou login.
+
+Não é importante o resto: newsletter, promoção, notificação automática de
+rede social, recibo comum. O julgamento sobre o conteúdo é da LLM; por isso
+estágio que parece propaganda ainda deve cair como importante.
 
 ## Notas técnicas
 
@@ -101,7 +112,7 @@ pessoas específicas.
 ## Estrutura planejada
 
 ```
-src/            gmail_client, rules, classifier, notifier, main
+src/            gmail_client, leitura, classificador, notificador, main
 data/sample/    e-mails fictícios
 eval/           conjunto de teste rotulado e scripts de avaliação
 tests/          testes
@@ -116,7 +127,6 @@ docs/           guia de configuração, prints
 - [x] Ambiente Python
 - [x] Acesso à Gmail API (conta pessoal)
 - [ ] Bot do Telegram
-- [ ] Regras
 - [ ] Classificador com LLM
 - [ ] Rotulagem no Gmail
 - [ ] Notificação no Telegram para e-mails importantes
