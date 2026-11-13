@@ -7,7 +7,7 @@ do modelo e medida depois, na avaliacao (eval/).
 
 import pytest
 
-from src.classificador import interpretar_resposta
+from src.classificador import classificar_email, interpretar_resposta
 
 
 def test_interpreta_json_bem_formado():
@@ -32,5 +32,41 @@ def test_recusa_categoria_invalida():
     texto = '{"categoria": "urgente", "prioridade": "alta", "motivo": "x"}'
 
     # Caminho (a): erro explicito, nao deixa passar lixo.
+    with pytest.raises(ValueError):
+        interpretar_resposta(texto)
+
+
+def test_recusa_texto_que_nao_e_json():
+    # O modelo fugiu do formato e devolveu texto solto, nao um JSON.
+    texto = "desculpe, nao consegui classificar"
+
+    with pytest.raises(ValueError):
+        interpretar_resposta(texto)
+
+
+def test_classificar_email_usa_o_modelo():
+    def modelo_falso(prompt):
+        # dublê: ignora o prompt e devolve um JSON fixo, como o Gemini faria.
+        return '{"categoria": "propaganda", "prioridade": "baixa", "motivo": "newsletter"}'
+
+    email = {
+        "remetente": "Loja <promo@exemplo.com>",
+        "assunto": "Ofertas",
+        "trecho": "descontos",
+    }
+
+    resultado = classificar_email(email, modelo_falso)
+
+    assert resultado == {
+        "categoria": "propaganda",
+        "prioridade": "baixa",
+        "motivo": "newsletter",
+    }
+
+
+def test_recusa_prioridade_invalida():
+    # Categoria valida, mas prioridade fora de alta/media/baixa.
+    texto = '{"categoria": "importante", "prioridade": "urgentissima", "motivo": "x"}'
+
     with pytest.raises(ValueError):
         interpretar_resposta(texto)
